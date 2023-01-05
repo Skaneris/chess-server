@@ -1,4 +1,5 @@
 const express = require('express')
+const path = require('path')
 const sequelize = require('./database')
 const taskRouter = require('./router/tasks')
 const cors = require('cors')
@@ -8,10 +9,15 @@ const PORT = 3000
 
 app.use(cors())
 app.use(express.json())
-app.use('/tasks', taskRouter)
+app.use(express.static('public'))
 
 app.get('/', (req, res) => {
-    res.send('Main page')
+    res.sendFile(path.resolve(__dirname, 'views', 'index.html'))
+})
+app.use('/tasks', taskRouter)
+
+app.get('/*', (req, res) => {
+    res.status(404).sendFile(path.resolve(__dirname, 'views', '404.html'))
 })
 
 sequelize.sync().then(() => {
